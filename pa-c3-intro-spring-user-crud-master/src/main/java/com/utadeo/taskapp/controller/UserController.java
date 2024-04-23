@@ -1,4 +1,6 @@
 package com.utadeo.taskapp.controller;
+import com.utadeo.taskapp.dto.ApiReponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.utadeo.taskapp.model.User;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 
 
 @RestController
+@RequestMapping("/user")
 public class UserController {
 
     private IUserService userService;
@@ -28,12 +31,18 @@ public class UserController {
     }
 
     @PostMapping("/create")
-    public User store(@RequestBody User user){
-        return this.userService.createUser(user);
+    public ApiReponse store(@RequestBody User user){
+        User userStore = this.userService.createUser(user);
+
+        return new ApiReponse(
+                HttpStatus.CREATED.value(),
+                "usuario creado",
+                userStore
+        );
     }
 
     @GetMapping("/{id}")
-    public User getById(@PathVariable Long id) {
+    public User getById(@PathVariable("id") Long id) {
         return this.userService.getById(id);
     }
     
@@ -43,14 +52,24 @@ public class UserController {
    }
 
    @PutMapping("/{id}")
-   public User updateUser(@PathVariable Long id, @RequestBody User user) {
-    user.setId(id); 
-    return this.userService.updateUser(id, user); 
+   public ApiReponse updateUser(@PathVariable("id") Long id, @RequestBody User user) {
+    User userUpdated = this.userService.updateUser(id, user);
+    return new ApiReponse(
+            HttpStatus.OK.value(),
+            "usuario actualizado",
+            userUpdated
+    );
    }
    
    @DeleteMapping("/{id}") 
-   public void deleteUser(@PathVariable Long id) {
-       this.userService.deleteUser(id); 
+   public ApiReponse deleteUser(@PathVariable("id") Long id) {
+     this.userService.deleteUser(id);
+     return new ApiReponse(
+             HttpStatus.NO_CONTENT.value(),
+             "usuario eliminado",
+             "eliminado"
+     );
+    
    }
     
     
